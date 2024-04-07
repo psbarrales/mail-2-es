@@ -7,6 +7,9 @@ Mail to Elasticsearch is a tool designed to extract email transactions from a Gm
 - Automatic extraction of email transactions from Gmail.
 - Stores transaction data in Elasticsearch for further analysis.
 
+## Deploy on Railway
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/qp9og6?referralCode=__wSQ2)
+
 ## Getting Started
 
 This code is a resources made for the following post: [How I Improved My Personal Finances Using LLM](https://medium.com/@psbarrales/como-mejor%C3%A9-mi-econom%C3%ADa-personal-usando-llm-072bf5a6b7f7).
