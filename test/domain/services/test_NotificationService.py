@@ -1,8 +1,15 @@
 from unittest.mock import MagicMock
+from polyfactory.factories.pydantic_factory import ModelFactory
+from datetime import datetime
 from domain.services.NotificationService import (
     NotificationService,
 )
 from domain.entities.Notification import Notification
+from domain.entities.Transaction import Transaction
+
+
+class TransactionFactory(ModelFactory[Transaction]):
+    pass
 
 
 def test_send_notification():
@@ -19,7 +26,9 @@ def test_send_notification():
     )
 
     # Call the send_notification method
-    transaction = MagicMock()
+    transaction = TransactionFactory.build()
+    transaction.billDate = datetime.now()
+    transaction.date = datetime.now()
     notification_service.send_notification(transaction)
 
     # Assertions to ensure the methods are called correctly

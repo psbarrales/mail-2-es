@@ -20,6 +20,7 @@ Deprecated==1.2.14
 distro==1.9.0
 elastic-transport==8.12.0
 elasticsearch==8.12.1
+Faker==24.7.1
 filelock==3.13.1
 Flask==3.0.2
 frozenlist==1.4.1
@@ -63,6 +64,7 @@ opentelemetry-semantic-conventions==0.44b0
 orjson==3.9.15
 packaging==23.2
 pluggy==1.4.0
+polyfactory==2.15.0
 preshed==3.0.9
 psycopg2-binary==2.9.9
 pydantic==2.6.3
