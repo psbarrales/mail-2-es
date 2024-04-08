@@ -1,5 +1,29 @@
 version: '3.7'
 services:
+  service:
+    container_name: service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - ./docker/:/app/docker/
+      - ./alembic/:/app/alembic/
+      - ./app/:/app/app/
+      - ./domain/:/app/domain/
+      - ./infrastructure/:/app/infrastructure/
+      - ./interface/:/app/interface/
+      - ./prompts/:/app/prompts/
+      - ./utils/:/app/utils/
+
+    entrypoint: /app/docker/entrypoint.sh
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+      - es01
+
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -89,7 +113,7 @@ services:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - data:/usr/share/elasticsearch/data
+      - esdata01:/usr/share/elasticsearch/data
     ports:
       - ${ES_PORT}:9200
     environment:

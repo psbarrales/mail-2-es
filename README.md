@@ -35,13 +35,7 @@ Before setting up Mail to Elasticsearch, ensure you have the following:
    ```
    cd mail-2-es
    ```
-3. Install the required dependencies on a virtual environment.
-   ```bash
-   python3 -m venv .venv
-   source ./.venv/bin/activate
-   pip install -r requirements.txt
-   ```
-4. Configure the application environment file .env, replace with your keys and settings:
+3. Configure the application environment file .env, replace with your keys and settings:
 
 ```bash
     OPENAI_API_KEY=sk-aaa
@@ -52,6 +46,8 @@ Before setting up Mail to Elasticsearch, ensure you have the following:
     MAIL_BOX=Wallet
     ELASTICSEARCH_HOST=https://localhost:9200
     DATABASE_URI=postgresql+psycopg2://wallet:123DummyPass@localhost/wallet
+    USER_FULL_NAME="Your Name or the Owner Account Name"
+    USER_DETAILS="" # You can add more details for your account main identification
 ```
 
 ### Running
@@ -60,18 +56,6 @@ To run all dependencies locally using Docker, execute:
 
 ```
 docker-compose up
-```
-
-To create the database schema:
-
-```
-alembic upgrade head
-```
-
-Then, to start the server, run:
-
-```
-python . --server
 ```
 
 ### Usage
