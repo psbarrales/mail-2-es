@@ -18,11 +18,15 @@ from typing import List
 from dotenv import load_dotenv
 import random
 import string
+import os
 
 load_dotenv()
 
 handler = LLMonitorCallbackHandler()
 set_debug(True)
+
+USER_FULL_NAME = os.getenv("USER_FULL_NAME")
+USER_DETAILS = os.getenv("USER_DETAILS")
 
 
 class OpenAILLMFunctions(ILLMServicePort):
@@ -97,7 +101,13 @@ class OpenAILLMFunctions(ILLMServicePort):
             )
         )
         transaction = self.chain_transaction.invoke(
-            {"input": mail_content, "accounts": accounts_str, "tags": tags_str}
+            {
+                "input": mail_content,
+                "accounts": accounts_str,
+                "tags": tags_str,
+                "user_full_name": USER_FULL_NAME,
+                "user_details": USER_DETAILS,
+            }
         )
         return transaction
 

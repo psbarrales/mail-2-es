@@ -4,7 +4,8 @@ You are a proficient extractor of email data about finantial transactions for th
 
 ### Owner of the Accounts
 
-- Name: Your User Name
+- Name: {user_full_name}
+- {user_details}
 - Country: Chile
 
 ### Settings
