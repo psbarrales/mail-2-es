@@ -1,3 +1,4 @@
+from domain.commands.SearchCommand import SearchCommand
 from domain.entities.Register import Register
 from domain.repositories.ISearchRepository import ISearchRepository
 from dotenv import load_dotenv
@@ -5,6 +6,7 @@ from elasticsearch import Elasticsearch
 from typing import List
 from utils.with_retry import with_retry
 import os
+import base64
 
 load_dotenv()
 
@@ -16,6 +18,8 @@ ELASTICSEARCH_INDEX = os.getenv("ELASTICSEARCH_INDEX")
 
 class ElasticSearchRepository(ISearchRepository):
     es: Elasticsearch = None
+    engine = "ElasticSearch"
+    index = "registers"
 
     def _connect(self) -> None:
         if self.es is None:
@@ -65,3 +69,30 @@ class ElasticSearchRepository(ISearchRepository):
                     print("Failed to index document:", item["index"]["error"])
         else:
             print("Bulk operation completed successfully.")
+
+    def search_command(self, command: SearchCommand):
+        self._connect()
+        headers = (
+            {"Content-Type": "application/json"} if command.body is not None else {}
+        )
+        headers["Authorization"] = (
+            f"Basic {base64.b64encode(f'{ELASTICSEARCH_USER}:{ELASTICSEARCH_PWD}'.encode('utf-8')).decode('utf-8')}"
+        )
+
+        try:
+            print("ElasticSearch Command", command)
+            response = self.es.transport.perform_request(
+                command.method.upper(),
+                command.path
+                if command.path.count(self.index) > 0
+                else f"/{self.index}{command.path}",
+                headers=headers,
+                body=command.body,
+                max_retries=0,
+                request_timeout=120000,
+                retry_on_timeout=0,
+            )
+            print("ElasticSearch Response", response.body)
+            return response.body
+        except Exception as e:
+            return f"There was an error: {e}"

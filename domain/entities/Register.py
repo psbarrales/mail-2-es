@@ -7,6 +7,7 @@ from .Tag import Tag
 
 
 class Register(BaseModel):
+    _id: Optional[str] = Field(None, description="Internal index search engine _id")
     id: str = Field(str(uuid4()))
     tags: Sequence[Tag] = Field(
         ..., description="Extract, create tags from the transaction. At least 3"
