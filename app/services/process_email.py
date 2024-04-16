@@ -1,6 +1,6 @@
 from utils.thread_task import thread_task
 from infrastructure.mailing.GmailMailService import GmailMailService
-from infrastructure.llm.LLMOpenAI import OpenAILLMFunctions
+from infrastructure.llm.OpenAILLMFunctions import OpenAILLMFunctions
 from infrastructure.database.sql.SQLAlchemyAdapter import SQLAlchemyAdapter
 from infrastructure.notification.TelegramNotification import TelegramNotification
 from infrastructure.search.ElasticSearchRepository import ElasticSearchRepository
@@ -51,7 +51,7 @@ class ProcessEmailService:
                 print("transaction", transaction)
                 self.registerService.create_registers(transaction)
                 print("register", True)
-                self.notificationService.send_notification(transaction)
+                # self.notificationService.send_notification(transaction)
                 print("notification", True)
                 self.mailService.commit(mail.id)
             except Exception as e:

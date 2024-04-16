@@ -1,8 +1,8 @@
 from domain.repositories.INotificationServicePort import INotificationServicePort
-from dotenv import load_dotenv
 import os
 import telegram
 import asyncio
+from dotenv import load_dotenv
 
 load_dotenv()
 
