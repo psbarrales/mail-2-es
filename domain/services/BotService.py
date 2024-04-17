@@ -11,4 +11,5 @@ class BotService(metaclass=Singleton):
             self.botServicePort = botServicePort
 
     def start(self, func: Any):
-        self.botServicePort.init(func)
+        self.botServicePort.on_message(func)
+        self.botServicePort.init()

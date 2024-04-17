@@ -2,7 +2,7 @@ from utils.thread_task import thread_task
 from infrastructure.mailing.GmailMailService import GmailMailService
 from infrastructure.llm.OpenAILLMFunctions import OpenAILLMFunctions
 from infrastructure.database.sql.SQLAlchemyAdapter import SQLAlchemyAdapter
-from infrastructure.notification.TelegramNotification import TelegramNotification
+from infrastructure.notification.TelegramBot import TelegramBot
 from infrastructure.search.ElasticSearchRepository import ElasticSearchRepository
 from domain.services.MailService import MailService
 from domain.services.TransactionService import TransactionService
@@ -31,7 +31,7 @@ class ProcessEmailService:
             )
         if self.notificationService is None:
             self.notificationService = NotificationService(
-                TelegramNotification(), OpenAILLMFunctions()
+                TelegramBot(), OpenAILLMFunctions()
             )
         if self.registerService is None:
             self.registerService = RegisterService(
