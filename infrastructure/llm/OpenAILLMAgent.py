@@ -63,9 +63,8 @@ def search(*args, **kwargs) -> str:
 
 class OpenAILLMAgent(ILLMAgentPort):
     llm: ChatOpenAI = ChatOpenAI(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4-1106-preview",
         temperature=0.5,
-        # model="gpt-4-1106-preview",
         callbacks=[handler],
     )
     agent: AgentExecutor = None

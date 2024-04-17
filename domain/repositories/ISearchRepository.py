@@ -8,6 +8,7 @@ class ISearchRepository(ABC):
     engine = "Default Search Engine"
     index = "registers"
     command_schema = SearchCommand
+    schema = Register
 
     @abstractmethod
     def store_register(self, register: List[Register]):

@@ -12,7 +12,6 @@ from telegram.ext import (
     Application,
     ContextTypes,
     MessageHandler,
-    Updater,
     filters,
 )
 

@@ -1,26 +1,41 @@
 from ..entities.Transaction import Transaction
 from ..entities.Register import Register
 from ..entities.Account import Account
+from ..entities.Mail import Mail
 from ..entities.Tag import Tag
 from ..repositories.IDatabaseRepository import IDatabaseRepository
+from ..repositories.ILLMServicePort import ILLMServicePort
 from ..repositories.ISearchRepository import ISearchRepository
 from typing import List
 from dateutil.relativedelta import relativedelta
 from uuid import uuid4
+from utils.with_retry import with_retry
 import copy
 
 
 class RegisterService:
+    llmServicePort: ILLMServicePort = None
     dbRepository: IDatabaseRepository = None
     searchRepository: ISearchRepository = None
 
     def __init__(
-        self, searchRepository: ISearchRepository, dbRepository: IDatabaseRepository
+        self,
+        llmServicePort: ILLMServicePort,
+        searchRepository: ISearchRepository,
+        dbRepository: IDatabaseRepository,
     ) -> None:
+        if self.llmServicePort is None:
+            self.llmServicePort = llmServicePort
         if self.searchRepository is None:
             self.searchRepository = searchRepository
         if self.dbRepository is None:
             self.dbRepository = dbRepository
+
+    @with_retry(retries=3, backoff=5)
+    def get_transaction(self, mail: Mail) -> Transaction:
+        accounts = self.dbRepository.get_all_accounts()
+        tags = self.dbRepository.get_all_tags()
+        return self.llmServicePort.extract_transaction(mail.to_str(), accounts, tags)
 
     def create_registers(self, transaction: Transaction) -> List[Register]:
         registers: List[Register] = []

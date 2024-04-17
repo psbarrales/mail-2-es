@@ -1,5 +1,6 @@
 from domain.commands.SearchCommand import SearchCommand
 from domain.entities.Register import Register
+from .ElastisSearchRegisterMapping import RegisterMapping
 from domain.repositories.ISearchRepository import ISearchRepository
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
@@ -20,6 +21,7 @@ class ElasticSearchRepository(ISearchRepository):
     es: Elasticsearch = None
     engine = "ElasticSearch"
     index = "registers"
+    schema = RegisterMapping
 
     def _connect(self) -> None:
         if self.es is None:

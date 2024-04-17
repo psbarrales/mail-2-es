@@ -5,7 +5,6 @@ from infrastructure.database.sql.SQLAlchemyAdapter import SQLAlchemyAdapter
 from infrastructure.notification.TelegramBot import TelegramBot
 from infrastructure.search.ElasticSearchRepository import ElasticSearchRepository
 from domain.services.MailService import MailService
-from domain.services.TransactionService import TransactionService
 from domain.services.NotificationService import NotificationService
 from domain.services.RegisterService import RegisterService
 from domain.entities.Mail import Mail
@@ -19,23 +18,18 @@ class ProcessEmailService:
     id: str = None
     mailService: MailService = None
     notificationService: NotificationService = None
-    transactionService: TransactionService = None
     registerService: RegisterService = None
 
     def __init__(self, *args):
         if self.mailService is None:
             self.mailService = MailService(GmailMailService())
-        if self.transactionService is None:
-            self.transactionService = TransactionService(
-                OpenAILLMFunctions(), SQLAlchemyAdapter()
-            )
         if self.notificationService is None:
             self.notificationService = NotificationService(
                 TelegramBot(), OpenAILLMFunctions()
             )
         if self.registerService is None:
             self.registerService = RegisterService(
-                ElasticSearchRepository(), SQLAlchemyAdapter()
+                OpenAILLMFunctions(), ElasticSearchRepository(), SQLAlchemyAdapter()
             )
 
     def run(self):
@@ -47,7 +41,7 @@ class ProcessEmailService:
     def process_mails(self, mails: List[Mail]):
         for mail in mails:
             try:
-                transaction = self.transactionService.get_transaction(mail)
+                transaction = self.registerService.get_transaction(mail)
                 print("transaction", transaction)
                 self.registerService.create_registers(transaction)
                 print("register", True)
