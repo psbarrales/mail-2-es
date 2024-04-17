@@ -4,7 +4,9 @@ from typing import Any
 
 class IBotServicePort(ABC):
     @abstractmethod
-    def init(self, func: Any):
+    def init(self):
         pass
 
-    pass
+    @abstractmethod
+    def on_message(self, func: Any):
+        pass

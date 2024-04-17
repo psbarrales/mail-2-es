@@ -1,16 +1,18 @@
 from domain.repositories.IBotServicePort import IBotServicePort
+from domain.repositories.INotificationServicePort import INotificationServicePort
 from domain.entities.ChatMessage import ChatMessage
+from utils.singleton import Singleton
 from dotenv import load_dotenv
 from typing import Any
-import asyncio
 import os
 import logging
-from utils.thread_task import thread_task
-from telegram import Update
+import asyncio
+from telegram import Update, Bot
 from telegram.ext import (
     Application,
     ContextTypes,
     MessageHandler,
+    Updater,
     filters,
 )
 
@@ -24,27 +26,41 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class TelegramBot(IBotServicePort):
-    application: Application
+class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton):
+    bot: Bot = None
+    application: Application = None
+    dispatcher = None
+    is_initialized = False
 
-    def init(self, func: Any):
-        self.application = (
-            Application.builder().token(os.getenv("TELEGRAM_TOKEN")).build()
+    def __init__(self):
+        token = os.getenv("TELEGRAM_TOKEN")
+        self.bot = Bot(token=token)
+        self.application = Application.builder().token(token=token).build()
+
+    def init(self):
+        # Inicia el bot para recibir mensajes
+        if self.is_initialized:
+            return
+        self.is_initialized = True
+        self.application.run_polling()
+
+    def on_message(self, callback):
+        # Registra un manejador de mensajes que usa el callback proporcionado
+        message_handler = MessageHandler(
+            filters.TEXT & ~filters.COMMAND, self.create_message_handle(callback)
         )
+        self.application.add_handler(message_handler)
 
-        self.application.add_handler(
-            MessageHandler(
-                filters.TEXT & ~filters.COMMAND, self.create_message_handle(func)
-            )
-        )
-
-        self.application.run_polling(allowed_updates=Update.ALL_TYPES)
-
-    def create_message_handle(self, func: Any):
+    def create_message_handle(self, callback: Any):
         async def message_handler(
             update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs
         ):
-            response: ChatMessage = func(update.message.text)
-            await update.message.reply_text(response.message)
+            response: ChatMessage = callback(update.message.text)
+            await update.message.reply_markdown_v2(response.message)
 
         return message_handler
+
+    def send_notification(self, message: str):
+        asyncio.run(
+            self.bot.send_message(chat_id=os.getenv("TELEGRAM_CHATID"), text=message)
+        )
