@@ -56,7 +56,7 @@ class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton
             update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs
         ):
             response: ChatMessage = callback(update.message.text)
-            await update.message.reply_markdown_v2(response.message)
+            await update.message.reply_text(response.message)
 
         return message_handler
 
