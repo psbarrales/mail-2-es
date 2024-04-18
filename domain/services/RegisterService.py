@@ -68,6 +68,13 @@ class RegisterService:
                     hour=7, minute=0, second=0, microsecond=0
                 )
                 repetitionDate = copy.deepcopy(nextRepetitionDay)
+
+                transaction_billDate = copy.deepcopy(transaction.billDate)
+                nextRepetitionBillDay = transaction_billDate + relativedelta(months=+1)
+                nextRepetitionBillDay = nextRepetitionBillDay.replace(
+                    hour=7, minute=0, second=0, microsecond=0
+                )
+                repetitionBillDate = copy.deepcopy(nextRepetitionBillDay)
                 for quota in range(2, quotas + 1):
                     registers.append(
                         Register(
@@ -80,10 +87,11 @@ class RegisterService:
                             tags=tags,
                             account=account,
                             date=repetitionDate,
-                            billDate=repetitionDate,
+                            billDate=repetitionBillDate,
                         )
                     )
                     repetitionDate += relativedelta(months=+1)
+                    repetitionBillDate += relativedelta(months=+1)
 
         if type == "CREDIT":
             quotas = int(1 if transaction.quotas <= 1 else transaction.quotas)
