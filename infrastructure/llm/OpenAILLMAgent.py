@@ -40,30 +40,9 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
     return store[session_id]
 
 
-class SearchInput(BaseModel):
-    host: str = Field(default="0.0.0.0", description="Host for search engine API")
-    path: str = Field(
-        description="Path for the search engine API after the host",
-    )
-    method: str = Field(
-        description="Method to use on the current API path",
-    )
-    body: str = Field(
-        None,
-        description="Create the json body to send to the API",
-    )
-
-
-@tool("search-tool", args_schema=SearchInput)
-def search(*args, **kwargs) -> str:
-    """Look up things online."""
-    print("Search Query", args)
-    return "LangChain"
-
-
 class OpenAILLMAgent(ILLMAgentPort):
     llm: ChatOpenAI = ChatOpenAI(
-        model="gpt-4-1106-preview",
+        model="gpt-3.5-turbo-1106",
         temperature=0.5,
         callbacks=[handler],
     )
@@ -83,8 +62,7 @@ class OpenAILLMAgent(ILLMAgentPort):
         tools_function = [
             StructuredTool.from_function(
                 func=tool.method, name=tool.name, description=tool.description
-            )
-            for tool in tools
+            ) for tool in tools
         ]
         agent = create_openai_tools_agent(self.llm, tools_function, prompt)
 

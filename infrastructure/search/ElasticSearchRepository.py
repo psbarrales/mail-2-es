@@ -31,7 +31,7 @@ class ElasticSearchRepository(ISearchRepository):
                 verify_certs=False,  # This disables SSL certificate verification
             )
 
-    @with_retry(retries=5, backoff=10)
+    @with_retry(retries=3, backoff=20)
     def store_register(self, registers: List[Register]):
         self._connect()
         # Ensure connection to Elasticsearch
@@ -72,6 +72,7 @@ class ElasticSearchRepository(ISearchRepository):
         else:
             print("Bulk operation completed successfully.")
 
+    @with_retry(retries=3, backoff=20)
     def search_command(self, command: SearchCommand):
         self._connect()
         headers = (
@@ -90,11 +91,10 @@ class ElasticSearchRepository(ISearchRepository):
                 else f"/{self.index}{command.path}",
                 headers=headers,
                 body=command.body,
-                max_retries=0,
-                request_timeout=120000,
-                retry_on_timeout=0,
+                max_retries=3,
+                request_timeout=30000,
             )
             print("ElasticSearch Response", response.body)
             return response.body
         except Exception as e:
-            return f"There was an error: {e}"
+            raise e

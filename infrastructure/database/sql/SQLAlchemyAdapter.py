@@ -16,13 +16,16 @@ class SQLAlchemyAdapter(IDatabaseRepository):
 
     @with_retry(retries=10, backoff=20)
     def __connect(self):
-        if self.session is None:
-            self.engine = create_engine(
-                os.getenv("DATABASE_URI"), pool_size=2, pool_recycle=200
-            )
-            Session = sessionmaker(bind=self.engine)
+        try:
+            if self.session is None:
+                self.engine = create_engine(
+                    os.getenv("DATABASE_URI"), pool_size=2, pool_recycle=200
+                )
+                Session = sessionmaker(bind=self.engine)
 
-            self.session = Session()
+                self.session = Session()
+        except Exception as e:
+            raise e
 
     def __disconnect(self):
         self.session.close()

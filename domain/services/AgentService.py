@@ -32,15 +32,15 @@ class AgentService(metaclass=Singleton):
         tools = []
         tools.append(
             ToolFunction(
-                name=f"{self.searchRepository.engine}_Manager_Tool",
+                name=f"{self.searchRepository.engine}_API_Tool",
                 description=f"Usefull when you need to manipulate data of {self.searchRepository.engine} using the API",
                 method=self.searchRepository.search_command,
             )
         )
         tools.append(
             ToolFunction(
-                name="Create_Transactions_Tool",
-                description="Use this when you need to create a register from a message",
+                name="Create_Transaction_Tool",
+                description="Use this when you need to create a register from a user message",
                 method=self.addRegisterTool.run,
             )
         )
