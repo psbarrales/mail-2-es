@@ -22,12 +22,12 @@ class AddRegisterTool:
                 OpenAILLMFunctions(), ElasticSearchRepository(), SQLAlchemyAdapter()
             )
 
-    def run(self, message_content: str):
+    def run(self, message_register_instruction_content: str):
         now = datetime.now()
         transaction = self.registerService.get_transaction(
             Mail(
                 subject="New message transaction",
-                content=message_content,
+                content=message_register_instruction_content,
                 date=now.strftime("%d/%m/%Y %H:%M:%S"),
             )
         )

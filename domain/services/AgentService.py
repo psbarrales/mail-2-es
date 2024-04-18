@@ -40,7 +40,7 @@ class AgentService(metaclass=Singleton):
         tools.append(
             ToolFunction(
                 name="Create_Transaction_Tool",
-                description="Use this when you need to create a register from a user message",
+                description="Use this to create a register from a plain text, try to get every details for a Register before create the message to be converted to transaction",
                 method=self.addRegisterTool.run,
             )
         )

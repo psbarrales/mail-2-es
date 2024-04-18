@@ -12,7 +12,8 @@ You are a proficient extractor of email data about finantial transactions for th
 
 - Default currency is: CLP
 - Default time: T10:00:00
-- Default tag language: Spanish
+- Default "description" language: Spanish
+- Default "tag" language: Spanish
 
 ### Accounts
 

@@ -45,35 +45,40 @@ class RegisterService:
         # Get transaction type
         type = transaction.transactionType
         uuid = str(uuid4())
+        transaction_date = copy.deepcopy(transaction.date)
+        transaction_billDate = copy.deepcopy(transaction.billDate)
+        if account.billDay is not None and account.billDay > 0:
+            billDay = account.billDay
+            nextBillDay = (
+                transaction_date.replace(day=billDay)
+                if transaction_date.day < billDay
+                and transaction_date.month == transaction_billDate.month
+                else transaction_date.replace(day=billDay) + relativedelta(months=+1)
+            )
+            nextBillDay = nextBillDay.replace(hour=7, minute=0, second=0, microsecond=0)
+            transaction_billDate = copy.deepcopy(nextBillDay)
+
         if type in ["DEBIT", "DEPOSIT", "WITHDRAWAL", "REFUND", "ADJUSTMENT", "BUDGET"]:
             quotas = int(1 if transaction.quotas <= 1 else transaction.quotas)
             registers.append(
                 Register(
                     id=uuid,
-                    description=transaction.description,
+                    description=f"{transaction.description}"
+                    + (f"(Repetición 1 de {quotas})" if quotas > 1 else ""),
                     transactionType=type,
                     direction=transaction.direction,
                     amount=transaction.amount,
                     currency=transaction.currency,
                     tags=tags,
                     account=account,
-                    date=transaction.date,
-                    billDate=transaction.billDate,
+                    date=transaction_date,
+                    billDate=transaction_billDate,
                 )
             )
             if quotas > 1:
-                transaction_date = copy.deepcopy(transaction.date)
                 nextRepetitionDay = transaction_date + relativedelta(months=+1)
-                nextRepetitionDay = nextRepetitionDay.replace(
-                    hour=7, minute=0, second=0, microsecond=0
-                )
-                repetitionDate = copy.deepcopy(nextRepetitionDay)
-
-                transaction_billDate = copy.deepcopy(transaction.billDate)
                 nextRepetitionBillDay = transaction_billDate + relativedelta(months=+1)
-                nextRepetitionBillDay = nextRepetitionBillDay.replace(
-                    hour=7, minute=0, second=0, microsecond=0
-                )
+                repetitionDate = copy.deepcopy(nextRepetitionDay)
                 repetitionBillDate = copy.deepcopy(nextRepetitionBillDay)
                 for quota in range(2, quotas + 1):
                     registers.append(
@@ -86,8 +91,8 @@ class RegisterService:
                             currency=transaction.currency,
                             tags=tags,
                             account=account,
-                            date=repetitionDate,
-                            billDate=repetitionBillDate,
+                            date=copy.deepcopy(repetitionDate),
+                            billDate=copy.deepcopy(repetitionBillDate),
                         )
                     )
                     repetitionDate += relativedelta(months=+1)
@@ -96,20 +101,12 @@ class RegisterService:
         if type == "CREDIT":
             quotas = int(1 if transaction.quotas <= 1 else transaction.quotas)
             amount = transaction.amount / quotas
-            billDay = account.billDay
-            transaction_date = copy.deepcopy(transaction.date)
-            nextBillDay = (
-                transaction_date.replace(day=billDay)
-                if transaction_date.day < billDay
-                else transaction_date.replace(day=billDay) + relativedelta(months=+1)
-            )
-            nextBillDay = nextBillDay.replace(hour=7, minute=0, second=0, microsecond=0)
-            billDate = copy.deepcopy(nextBillDay)
+            billDate = copy.deepcopy(transaction_billDate)
             for quota in range(1, quotas + 1):
                 registers.append(
                     Register(
                         id=uuid,
-                        description=transaction.description,
+                        description=f"{transaction.description} (Cuota {quota} de {quotas})",
                         transactionType=type,
                         direction=transaction.direction,
                         amount=amount,
@@ -153,7 +150,7 @@ class RegisterService:
             ):
                 target = Register(
                     id=uuid,
-                    description="-> " + transaction.description,
+                    description=("<- " if transaction.direction == "IN" else "-> ") + transaction.description,
                     transactionType=type,
                     direction="OUT" if transaction.direction == "IN" else "IN",
                     amount=transaction.amount,
