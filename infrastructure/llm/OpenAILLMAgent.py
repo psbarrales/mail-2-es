@@ -62,7 +62,8 @@ class OpenAILLMAgent(ILLMAgentPort):
         tools_function = [
             StructuredTool.from_function(
                 func=tool.method, name=tool.name, description=tool.description
-            ) for tool in tools
+            )
+            for tool in tools
         ]
         agent = create_openai_tools_agent(self.llm, tools_function, prompt)
 

@@ -45,8 +45,11 @@ class ProcessEmailService:
                 print("transaction", transaction)
                 self.registerService.create_registers(transaction)
                 print("register", True)
-                self.notificationService.send_notification(transaction)
-                print("notification", True)
+                try:
+                    self.notificationService.send_notification(transaction)
+                    print("notification", True)
+                except Exception:
+                    pass
                 self.mailService.commit(mail.id)
             except Exception as e:
                 logging.error(e)

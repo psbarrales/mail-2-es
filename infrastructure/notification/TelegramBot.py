@@ -26,15 +26,13 @@ logger = logging.getLogger(__name__)
 
 
 class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton):
-    bot: Bot = None
     application: Application = None
-    dispatcher = None
+    token: str
     is_initialized = False
 
     def __init__(self):
-        token = os.getenv("TELEGRAM_TOKEN")
-        self.bot = Bot(token=token)
-        self.application = Application.builder().token(token=token).build()
+        self.token = os.getenv("TELEGRAM_TOKEN")
+        self.application = Application.builder().token(token=self.token).build()
 
     def init(self):
         # Inicia el bot para recibir mensajes
@@ -60,6 +58,7 @@ class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton
         return message_handler
 
     def send_notification(self, message: str):
+        bot = Bot(token=self.token)
         asyncio.run(
-            self.bot.send_message(chat_id=os.getenv("TELEGRAM_CHATID"), text=message)
+            bot.send_message(chat_id=os.getenv("TELEGRAM_CHATID"), text=message)
         )
