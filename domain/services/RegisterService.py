@@ -63,7 +63,7 @@ class RegisterService:
             registers.append(
                 Register(
                     id=uuid,
-                    description=f"{transaction.description}"
+                    description=f"{transaction.description} "
                     + (f"(Repetición 1 de {quotas})" if quotas > 1 else ""),
                     transactionType=type,
                     direction=transaction.direction,
@@ -106,7 +106,12 @@ class RegisterService:
                 registers.append(
                     Register(
                         id=uuid,
-                        description=f"{transaction.description} (Cuota {quota} de {quotas})",
+                        description=f"{transaction.description} "
+                        + (
+                            f"(Cuota {quota} de {quotas})"
+                            if quotas > 1
+                            else "(Sin cuotas)"
+                        ),
                         transactionType=type,
                         direction=transaction.direction,
                         amount=amount,
@@ -150,7 +155,8 @@ class RegisterService:
             ):
                 target = Register(
                     id=uuid,
-                    description=("<- " if transaction.direction == "IN" else "-> ") + transaction.description,
+                    description=("<- " if transaction.direction == "IN" else "-> ")
+                    + transaction.description,
                     transactionType=type,
                     direction="OUT" if transaction.direction == "IN" else "IN",
                     amount=transaction.amount,
