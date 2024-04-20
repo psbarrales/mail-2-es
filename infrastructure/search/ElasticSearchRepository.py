@@ -23,6 +23,12 @@ class ElasticSearchRepository(ISearchRepository):
     index = "registers"
     schema = RegisterMapping
 
+    @with_retry(retries=2, backoff=30)
+    def is_connected(self):
+        self._connect()
+        if not self.es.ping():
+            raise ConnectionError("Elasticsearch connection failed")
+
     def _connect(self) -> None:
         if self.es is None:
             self.es = Elasticsearch(

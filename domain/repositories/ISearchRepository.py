@@ -11,6 +11,10 @@ class ISearchRepository(ABC):
     schema = Register
 
     @abstractmethod
+    def is_connected(self):
+        pass
+
+    @abstractmethod
     def store_register(self, register: List[Register]):
         pass
 

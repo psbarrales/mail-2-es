@@ -42,6 +42,7 @@ class SQLAlchemyAdapter(IDatabaseRepository):
         self.__disconnect()
         return account
 
+    @with_retry(retries=2, backoff=30)
     def get_all_accounts(self) -> List[Account]:
         self.__connect()
         accounts = self.session.query(AccountModel).all()
@@ -64,6 +65,7 @@ class SQLAlchemyAdapter(IDatabaseRepository):
         self.__disconnect()
         return tag
 
+    @with_retry(retries=2, backoff=30)
     def get_all_tags(self) -> List[Tag]:
         self.__connect()
         tags = self.session.query(TagModel).all()

@@ -2,11 +2,10 @@ from utils.singleton import Singleton
 from ..repositories.IDatabaseRepository import IDatabaseRepository
 from ..repositories.ILLMAgentPort import ILLMAgentPort
 from ..repositories.ISearchRepository import ISearchRepository
-from ..entities.Register import Register
 from ..entities.ChatMessage import ChatMessage
 from ..entities.ToolFunction import ToolFunction
-from ..commands.SearchCommand import SearchCommand
 from app.tools.AddRegisterTool import AddRegisterTool
+from utils.with_retry import with_retry
 
 
 class AgentService(metaclass=Singleton):
@@ -46,9 +45,13 @@ class AgentService(metaclass=Singleton):
         )
         return tools
 
+    @with_retry(retries=3, backoff=30)
     def run(self, chat: ChatMessage) -> ChatMessage:
-        tools = self.create_tools()
-        self.llmAgent.init(tools)
+        # Connect to databases (start databases)
+        self.searchRepository.is_connected()
+        self.databaseRepository.get_all_accounts()
+
+        self.llmAgent.init(self.create_tools())
         return self.llmAgent.run(
             chat.message,
             self.searchRepository.engine,
