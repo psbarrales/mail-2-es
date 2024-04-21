@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import create_openai_tools_agent, AgentExecutor
 from langchain.globals import set_debug
 from langchain.prompts import MessagesPlaceholder
+from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -37,6 +38,11 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = ChatMessageHistory()
     return store[session_id]
+
+
+memory = ConversationBufferWindowMemory(
+    return_messages=True, memory_key="chat_history", input_key="input", k=5
+)
 
 
 class OpenAILLMAgent(ILLMAgentPort):
@@ -71,11 +77,8 @@ class OpenAILLMAgent(ILLMAgentPort):
             )
         agent = create_openai_tools_agent(llm, tools_function, prompt)
 
-        self.agent = RunnableWithMessageHistory(
-            AgentExecutor(agent=agent, tools=tools_function, verbose=True),
-            get_session_history,
-            input_messages_key="input",
-            history_messages_key="chat_history",
+        self.agent = AgentExecutor(
+            agent=agent, tools=tools_function, memory=memory, verbose=True
         )
 
     def run(
