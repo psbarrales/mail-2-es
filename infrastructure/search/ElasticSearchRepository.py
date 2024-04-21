@@ -28,6 +28,9 @@ class ElasticSearchRepository(ISearchRepository):
         self._connect()
         if not self.es.ping():
             raise ConnectionError("Elasticsearch connection failed")
+        else:
+            self.es.close()
+            self.es = None
 
     def _connect(self) -> None:
         if self.es is None:
