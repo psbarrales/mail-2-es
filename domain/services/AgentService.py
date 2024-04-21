@@ -46,12 +46,12 @@ class AgentService(metaclass=Singleton):
         return tools
 
     @with_retry(retries=3, backoff=30)
-    def run(self, chat: ChatMessage) -> ChatMessage:
+    def run(self, chat: ChatMessage, model_id: str) -> ChatMessage:
         # Connect to databases (start databases)
         self.searchRepository.is_connected()
         self.databaseRepository.get_all_accounts()
 
-        self.llmAgent.init(self.create_tools())
+        self.llmAgent.init(self.create_tools(), model_id)
         return self.llmAgent.run(
             chat.message,
             self.searchRepository.engine,

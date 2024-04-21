@@ -13,3 +13,6 @@ class BotService(metaclass=Singleton):
     def start(self, func: Any):
         self.botServicePort.on_message(func)
         self.botServicePort.init()
+
+    def add_command(self, command: str, func: Any):
+        self.botServicePort.on_command(command, func)

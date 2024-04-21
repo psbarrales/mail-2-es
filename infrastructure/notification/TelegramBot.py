@@ -11,6 +11,7 @@ from telegram import Update, Bot
 from telegram.ext import (
     Application,
     ContextTypes,
+    CommandHandler,
     MessageHandler,
     filters,
 )
@@ -48,6 +49,14 @@ class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton
         )
         self.application.add_handler(message_handler)
 
+    def on_command(self, command_name, callback):
+        # Registra un manejador de mensajes que usa el callback proporcionado
+        command_handler = CommandHandler(
+            command_name,
+            self.create_command_handle(command_name, callback),
+        )
+        self.application.add_handler(command_handler)
+
     def create_message_handle(self, callback: Any):
         async def message_handler(
             update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs
@@ -56,6 +65,30 @@ class TelegramBot(IBotServicePort, INotificationServicePort, metaclass=Singleton
             await update.message.reply_text(response.message)
 
         return message_handler
+
+    def create_command_handle(self, command_name, callback: Any):
+        async def command_handler(
+            update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs
+        ):
+            command_prefix = f"/{command_name} "
+            text = update.message.text
+            if text.startswith(command_prefix):
+                # Elimina el comando y un espacio adicional
+                argument_text = text[len(command_prefix) :]
+            elif text == f"/{command_name}":
+                # Si el comando está solo sin argumentos adicionales
+                argument_text = ""
+            else:
+                # En caso de que el comando esté seguido directamente de otro texto sin espacio
+                argument_text = (
+                    text[len(command_name) :]
+                    if text.startswith(f"/{command_name}")
+                    else text
+                )
+            response: ChatMessage = callback(argument_text)
+            await update.message.reply_text(response.message)
+
+        return command_handler
 
     def send_notification(self, message: str):
         bot = Bot(token=self.token)

@@ -10,3 +10,7 @@ class IBotServicePort(ABC):
     @abstractmethod
     def on_message(self, func: Any):
         pass
+
+    @abstractmethod
+    def on_command(self, command_name: str, func: Any):
+        pass

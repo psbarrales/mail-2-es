@@ -17,7 +17,6 @@ from langchain_core.prompts import (
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from langchain.tools import StructuredTool
-from .model import llm
 from utils.readfile_content import readfile_content
 from dotenv import load_dotenv
 from datetime import datetime
@@ -43,7 +42,8 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 class OpenAILLMAgent(ILLMAgentPort):
     agent: AgentExecutor = None
 
-    def init(self, tools):
+    def init(self, tools, model_id: str = "gpt-3.5-turbo-1106"):
+        llm = None
         prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessagePromptTemplate.from_template(
@@ -62,6 +62,13 @@ class OpenAILLMAgent(ILLMAgentPort):
             )
             for tool in tools
         ]
+        if model_id is not None:
+            llm = ChatOpenAI(
+                model=model_id,
+                temperature=0.5,
+                # model="gpt-4-1106-preview",
+                callbacks=[handler],
+            )
         agent = create_openai_tools_agent(llm, tools_function, prompt)
 
         self.agent = RunnableWithMessageHistory(

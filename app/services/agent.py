@@ -20,8 +20,13 @@ class AgentServices:
             self.botService = BotService(TelegramBot())
 
     def bot(self) -> None:
+        self.botService.add_command("gpt4", self.chat_smart)
         self.botService.start(self.chat)
 
     def chat(self, message: str) -> ChatMessage:
         chat = ChatMessage(message=message)
-        return self.agentService.run(chat)
+        return self.agentService.run(chat, "gpt-3.5-turbo-1106")
+
+    def chat_smart(self, message: str) -> ChatMessage:
+        chat = ChatMessage(message=message)
+        return self.agentService.run(chat, "gpt-4-1106-preview")

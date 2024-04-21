@@ -8,7 +8,7 @@ from typing import List
 
 class ILLMAgentPort(ABC):
     @abstractmethod
-    def init(self, tools: List[ToolFunction]) -> None:
+    def init(self, tools: List[ToolFunction], model_id: str = None) -> None:
         pass
 
     @abstractmethod
