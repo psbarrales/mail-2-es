@@ -4,7 +4,7 @@ from typing import Literal
 
 
 class RegisterMapping(Register):
-    id: str = Field(None, alias="id.keyword", description="UUIDv4 identifier")
+    uid: str = Field(None, alias="uid.keyword", description="UUIDv4 identifier")
     direction: Literal["IN", "OUT"] = Field(
         alias="direction.keyword",
         description="Specifies the type of transaction direction, IN for income and OUT for outcome",

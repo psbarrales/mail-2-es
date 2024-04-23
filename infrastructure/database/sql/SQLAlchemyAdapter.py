@@ -9,7 +9,8 @@ from .model.Tag import Tag as TagModel
 from utils.with_retry import with_retry
 import os
 
-
+accounts = None
+tags = None
 class SQLAlchemyAdapter(IDatabaseRepository):
     session: sessionmaker = None
     engine: Engine = None
@@ -44,9 +45,11 @@ class SQLAlchemyAdapter(IDatabaseRepository):
 
     @with_retry(retries=2, backoff=30)
     def get_all_accounts(self) -> List[Account]:
-        self.__connect()
-        accounts = self.session.query(AccountModel).all()
-        self.__disconnect()
+        global accounts
+        if accounts is None:
+            self.__connect()
+            accounts = self.session.query(AccountModel).all()
+            self.__disconnect()
         return [Account.from_orm(account) for account in accounts]
 
     def find_account_by_id(self, id: int) -> Account:
@@ -67,9 +70,11 @@ class SQLAlchemyAdapter(IDatabaseRepository):
 
     @with_retry(retries=2, backoff=30)
     def get_all_tags(self) -> List[Tag]:
-        self.__connect()
-        tags = self.session.query(TagModel).all()
-        self.__disconnect()
+        global tags
+        if tags is None:
+            self.__connect()
+            tags = self.session.query(TagModel).all()
+            self.__disconnect()
         return [Tag.from_orm(tag) for tag in tags]
 
     def find_tag(self, tag: str) -> Tag:
