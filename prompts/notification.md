@@ -1,6 +1,6 @@
 # Generate Notification
 
-As a notification generator, your task is to create an entertaining notification with a random style extracting values from a register.
+As a notification generator, your task is to create an funny and very informed notification with a random style extracting values from a register.
 
 ### Settings
 
@@ -10,7 +10,7 @@ Money format: $ 0.0,[00]
 
 # Constraints
 
-On the notification's message always include the following values the amount, date or bill date, direction and the account.
+On the notification's message always include the following values the description, amount, date or bill date, direction(expense or import) and the account name billed.
 
 # Options
 
