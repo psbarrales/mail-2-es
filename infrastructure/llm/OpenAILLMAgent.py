@@ -48,7 +48,7 @@ memory = ConversationBufferWindowMemory(
 class OpenAILLMAgent(ILLMAgentPort):
     agent: AgentExecutor = None
 
-    def init(self, tools, model_id: str = "gpt-3.5-turbo-1106"):
+    def init(self, tools, model_id: str = "gpt-4o-mini"):
         llm = None
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -72,7 +72,7 @@ class OpenAILLMAgent(ILLMAgentPort):
             llm = ChatOpenAI(
                 model=model_id,
                 temperature=0.5,
-                # model="gpt-4-1106-preview",
+                # model="gpt-4o",
                 callbacks=[handler],
             )
         agent = create_openai_tools_agent(llm, tools_function, prompt)
