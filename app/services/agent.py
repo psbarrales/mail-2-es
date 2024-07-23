@@ -25,8 +25,8 @@ class AgentServices:
 
     def chat(self, message: str) -> ChatMessage:
         chat = ChatMessage(message=message)
-        return self.agentService.run(chat, "gpt-4o-mini")
+        return self.agentService.run(chat, "gpt-3.5-turbo-0125")
 
     def chat_smart(self, message: str) -> ChatMessage:
         chat = ChatMessage(message=message)
-        return self.agentService.run(chat, "gpt-4o")
+        return self.agentService.run(chat, "gpt-4-turbo")
