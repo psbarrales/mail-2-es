@@ -9,4 +9,4 @@ cron
 alembic upgrade head
 
 # Ejecutar la aplicación Flask
-python __main__.py --server
+python3 __main__.py --server
